@@ -23,5 +23,5 @@ class Stateful:
     def __init__(self):
         self.state: Optional[State] = None
     
-    def provide_state(self, state: State):
+    def on_state(self, state: State):
         self.state = state

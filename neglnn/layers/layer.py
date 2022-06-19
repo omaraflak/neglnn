@@ -30,3 +30,6 @@ class Layer(Stateful, Identifiable):
 
     def trainable(self) -> bool:
         raise NotImplementedError
+    
+    def parameters_count(self) -> int:
+        return len(self.parameters())
