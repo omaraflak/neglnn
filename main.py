@@ -16,10 +16,7 @@ network = [
     (Tanh(), None, None)
 ]
 
-initialize(network)
-
 fit(network, X, Y, MSE(), 10000)
-print(predict(network, X[0]))
-print(predict(network, X[1]))
-print(predict(network, X[2]))
-print(predict(network, X[3]))
+
+for x in X:
+    print(predict(network, x))

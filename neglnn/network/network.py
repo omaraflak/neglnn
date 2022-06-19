@@ -70,4 +70,4 @@ def fit(
         state.cost = cost
 
         if verbose:
-            print(f'#{i + 1}/{iterations}\t error={cost:2f}')
+            print(f'#{i + 1}/{iterations}\t cost={cost:2f}')
