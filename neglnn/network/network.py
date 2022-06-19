@@ -31,12 +31,6 @@ def create(builder: list[NetworkLayerBuilder]) -> NetworkLayer:
             network.append((layer, None, None))
     return network
 
-def initialize(network: list[NetworkLayer]):
-    # initialize layers
-    for layer, initializer, _ in network:
-        if layer.trainable():
-            layer.initialize(initializer)
-
 def predict(network: list[NetworkLayer], x: Array) -> Array:
     for layer, _, _ in network:
         x = layer.forward(x)
@@ -67,8 +61,10 @@ def fit(
 
     loss.on_state(state)
 
-    # initialize layers
-    initialize(network)
+    # initialize layers parameters
+    for layer, initializer, _ in network:
+        if layer.trainable():
+            layer.initialize(initializer)
 
     # provide initialized target shapes to optimizers
     for layer, _, optimizers in network:
