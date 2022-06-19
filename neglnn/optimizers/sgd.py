@@ -8,7 +8,7 @@ class Update:
     gradient: Array
 
 class SGD(Optimizer):
-    def __init__(self, learning_rate: Float):
+    def __init__(self, learning_rate: Float = 0.01):
         super().__init__()
         self.learning_rate = learning_rate
         self.updates: list[Update] = []

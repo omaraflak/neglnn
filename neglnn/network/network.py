@@ -27,7 +27,12 @@ def fit(
     iterations: int,
     verbose: bool = True
 ):
-    state = State(iterations, len(x_train), len(network))
+    state = State(
+        [layer for layer, _, _ in network],
+        iterations,
+        len(x_train),
+        len(network)
+    )
 
     # provide state to network components
     for layer, initializer, optimizer in network:
@@ -47,18 +52,20 @@ def fit(
         cost = 0
 
         # go through all training samples
-        for index, (x, y) in enumerate(zip(x_train, y_train)):
-            state.current_layer = index
-
+        for x, y in zip(x_train, y_train):
             # forward propagation
-            output = predict(network, x)
-
+            output = x
+            for index, (layer, _, _) in enumerate(network):
+                state.current_layer = index
+                output = layer.forward(output)
+            
             # error for display purpose
             cost += loss.call(y, output)
 
             # backward propagation
             output_gradient = loss.prime(y, output)
-            for layer, _, optimizer in reversed(network):
+            for index, (layer, _, optimizer) in enumerate(reversed(network)):
+                state.current_iteration = index
                 output_state = layer.backward(output_gradient)
                 output_gradient = output_state.input_gradient
                 if layer.trainable():

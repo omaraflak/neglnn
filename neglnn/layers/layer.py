@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from neglnn.network.state import Stateful
 from neglnn.initializers.initializer import Initializer
-from neglnn.utils.types import Array
+from neglnn.utils.types import Array, Shape
 from neglnn.utils.identifiable import Identifiable
 
 @dataclass
@@ -23,4 +23,10 @@ class Layer(Stateful, Identifiable):
         raise NotImplementedError
     
     def trainable(self) -> bool:
+        raise NotImplementedError
+    
+    def input_shape(self) -> Shape:
+        raise NotImplementedError
+    
+    def output_shape(self) -> Shape:
         raise NotImplementedError

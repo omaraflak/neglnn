@@ -2,7 +2,7 @@ from typing import Optional
 import numpy as np
 from neglnn.layers.layer import Layer, BackwardState
 from neglnn.initializers.initializer import Initializer
-from neglnn.utils.types import Array
+from neglnn.utils.types import Array, Shape
 
 class Dense(Layer):
     def __init__(self, input_size: int, output_size: int):
@@ -32,3 +32,9 @@ class Dense(Layer):
     
     def trainable(self) -> bool:
         return True
+    
+    def input_shape(self) -> Shape:
+        return (1, self.input_size)
+    
+    def output_shape(self) -> Shape:
+        return (1, self.output_size)
