@@ -19,14 +19,14 @@ class Layer(Stateful, Identifiable):
     def backward(self, output_gradient: Array) -> BackwardState:
         raise NotImplementedError
 
-    def parameters(self) -> tuple[Array, ...]:
-        raise NotImplementedError
-    
-    def trainable(self) -> bool:
-        raise NotImplementedError
-    
     def input_shape(self) -> Shape:
         raise NotImplementedError
-    
+
     def output_shape(self) -> Shape:
+        raise NotImplementedError
+
+    def parameters(self) -> tuple[Array, ...]:
+        raise NotImplementedError
+
+    def trainable(self) -> bool:
         raise NotImplementedError

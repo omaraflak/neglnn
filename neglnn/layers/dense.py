@@ -1,5 +1,5 @@
-from typing import Optional
 import numpy as np
+from typing import Optional
 from neglnn.layers.layer import Layer, BackwardState
 from neglnn.initializers.initializer import Initializer
 from neglnn.utils.types import Array, Shape
@@ -27,14 +27,14 @@ class Dense(Layer):
             (np.dot(self.input.T, output_gradient), output_gradient)
         )
     
-    def parameters(self) -> tuple[Array, ...]:
-        return (self.weights, self.bias)
-    
-    def trainable(self) -> bool:
-        return True
-    
     def input_shape(self) -> Shape:
         return (1, self.input_size)
     
     def output_shape(self) -> Shape:
         return (1, self.output_size)
+
+    def parameters(self) -> tuple[Array, ...]:
+        return (self.weights, self.bias)
+
+    def trainable(self) -> bool:
+        return True
