@@ -101,8 +101,8 @@ def fit(
                         output_state.parameter_gradients
                     ):
                         optimizer.record(Update(parameter, gradient))
-                        if optimizer.should_update():
-                            optimizer.update()
+                        if optimizer.should_optimize():
+                            optimizer.optimize()
 
         cost /= len(x_train)
         state.cost = cost
