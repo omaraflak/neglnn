@@ -6,9 +6,9 @@ import neglnn.layers.layer
 @dataclass
 class State:
     layers: list['neglnn.layers.layer.Layer'] = field(default_factory=list)
-    max_iterations: int = 0
+    epochs: int = 0
     training_samples: int = 0
-    current_iteration: int = 0
+    current_epoch: int = 0
     current_layer: int = 0
     cost: Float = 0
 

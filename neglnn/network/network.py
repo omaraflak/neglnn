@@ -37,15 +37,15 @@ class Network:
         x_train: list[Array],
         y_train: list[Array],
         loss: Loss,
-        iterations: int,
+        epochs: int,
         verbose: bool = True
     ):
         state = self._initialize()
-        state.max_iterations = iterations
+        state.epochs = epochs
         state.training_samples = len(x_train)
 
         # training loop
-        for i in range(iterations):
+        for i in range(epochs):
             state.current_iteration = i
             cost = 0
 
@@ -63,7 +63,7 @@ class Network:
                 # backward propagation
                 output_gradient = loss.prime(y, output)
                 for index, block in enumerate(reversed(self.network)):
-                    state.current_iteration = index
+                    state.current_epoch = index
                     output_state = block.layer.backward(output_gradient)
                     output_gradient = output_state.input_gradient
                     if block.layer.trainable():
@@ -80,7 +80,7 @@ class Network:
             state.cost = cost
 
             if verbose:
-                print(f'#{i + 1}/{iterations}\t cost={cost:2f}')
+                print(f'#{i + 1}/{epochs}\t cost={cost:2f}')
 
     def predict(self, x: Array) -> Array:
         for block in self.network:
@@ -89,6 +89,11 @@ class Network:
 
     def predict_all(self, x_list: list[Array]) -> list[Array]:
         return [self.predict(x) for x in x_list]
+    
+    def subnetwork(self, start: int, end: Optional[int] = None) -> 'Network':
+        if end is None:
+            end = len(self.network)
+        return Network(self.network[start:end])
 
     def _initialize(self) -> State:
         state = State(layers=[block.layer for block in self.network])
