@@ -89,11 +89,6 @@ class Network:
 
     def predict_all(self, x_list: list[Array]) -> list[Array]:
         return [self.predict(x) for x in x_list]
-    
-    def subnetwork(self, start: int, end: Optional[int] = None) -> 'Network':
-        if end is None:
-            end = len(self.network)
-        return Network(self.network[start:end])
 
     def _initialize(self) -> State:
         state = State(layers=[block.layer for block in self.network])
@@ -125,6 +120,9 @@ class Network:
                     optimizer.on_target_shape(parameter.shape)
 
         return state
+    
+    def __getitem__(self, subscript) -> 'Network':
+        return Network(self.network[subscript])
 
     @staticmethod
     def create(builders: list[BlockBuilder]) -> 'Network':
