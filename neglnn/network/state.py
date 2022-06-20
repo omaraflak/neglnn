@@ -1,23 +1,28 @@
 from typing import Optional
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from neglnn.utils.types import Float, Shape
 import neglnn.layers.layer
 
 @dataclass
 class State:
-    layers: list['neglnn.layers.layer.Layer']
-    max_iterations: int
-    training_samples: int
-    layers_count: int
+    layers: list['neglnn.layers.layer.Layer'] = field(default_factory=list)
+    max_iterations: int = 0
+    training_samples: int = 0
     current_iteration: int = 0
     current_layer: int = 0
     cost: Float = 0
 
+    @property
     def current_layer_input_shape(self) -> Shape:
         return self.layers[self.current_layer].input_shape()
 
+    @property
     def current_layer_output_shape(self) -> Shape:
         return self.layers[self.current_layer].output_shape()
+    
+    @property
+    def layers_count(self) -> int:
+        return len(self.layers)
 
 class Stateful:
     def __init__(self):

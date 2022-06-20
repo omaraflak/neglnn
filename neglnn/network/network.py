@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from typing import Optional, Callable
 from neglnn.initializers.initializer import Initializer
 from neglnn.layers.layer import Layer
@@ -6,106 +7,120 @@ from neglnn.network.state import State
 from neglnn.optimizers.optimizer import Optimizer, Update
 from neglnn.utils.types import Array
 
-NetworkLayerBuilder = tuple[
-    Layer,
-    Optional[Initializer],
-    Optional[Callable[[], Optimizer]]
-]
+@dataclass
+class Block:
+    layer: Layer
+    initializer: Optional[Initializer] = None
+    optimizers: list[Optimizer] = field(default_factory=list)
 
-NetworkLayer = tuple[
-    Layer,
-    Optional[Initializer],
-    list[Optimizer]
-]
+@dataclass
+class BlockBuilder:
+    layer: Layer
+    initializer: Optional[Initializer] = None
+    optimizer_provider: Optional[Callable[[], Optimizer]] = None
 
-def create(builder: list[NetworkLayerBuilder]) -> NetworkLayer:
-    network: list[NetworkLayer] = []
-    for layer, initializer, provider in builder:
-        if layer.trainable():
-            optimizers = [
-                provider()
-                for _ in range(layer.parameters_count())
-            ]
-            network.append((layer, initializer, optimizers))
-        else:
-            network.append((layer, None, None))
-    return network
+    def optimizers(self, n: int) -> list[Optimizer]:
+        return [self.optimizer_provider() for _ in range(n)]
 
-def predict(network: list[NetworkLayer], x: Array) -> Array:
-    for layer, _, _ in network:
-        x = layer.forward(x)
-    return x
+    def build(self):
+        optimizers: list[Optimizer] = []
+        if self.layer.trainable():
+            optimizers = self.optimizers(self.layer.parameters_count())
+        return Block(self.layer, self.initializer, optimizers)
 
-def fit(
-    network: list[NetworkLayer],
-    x_train: list[Array],
-    y_train: list[Array],
-    loss: Loss,
-    iterations: int,
-    verbose: bool = True
-):
-    state = State(
-        [layer for layer, _, _ in network],
-        iterations,
-        len(x_train),
-        len(network)
-    )
+class Network:
+    def __init__(self, network: list[Block]):
+        self.network = network
 
-    # provide state to network components
-    for layer, initializer, optimizers in network:
-        layer.on_state(state)
-        if layer.trainable():
-            initializer.on_state(state)
-            for optimizer in optimizers:
-                optimizer.on_state(state)
+    def fit(
+        self,
+        x_train: list[Array],
+        y_train: list[Array],
+        loss: Loss,
+        iterations: int,
+        verbose: bool = True
+    ):
+        state = self._initialize()
+        state.max_iterations = iterations
+        state.training_samples = len(x_train)
 
-    loss.on_state(state)
+        # training loop
+        for i in range(iterations):
+            state.current_iteration = i
+            cost = 0
 
-    # initialize layers parameters
-    for layer, initializer, _ in network:
-        if layer.trainable():
-            layer.initialize(initializer)
+            # go through all training samples
+            for x, y in zip(x_train, y_train):
+                # forward propagation
+                output = x
+                for index, block in enumerate(self.network):
+                    state.current_layer = index
+                    output = block.layer.forward(output)
+                
+                # error for display purpose
+                cost += loss.call(y, output)
 
-    # provide initialized target shapes to optimizers
-    for layer, _, optimizers in network:
-        if layer.trainable():
-            for optimizer, parameter in zip(optimizers, layer.parameters()):
-                optimizer.on_target_shape(parameter.shape)
+                # backward propagation
+                output_gradient = loss.prime(y, output)
+                for index, block in enumerate(reversed(self.network)):
+                    state.current_iteration = index
+                    output_state = block.layer.backward(output_gradient)
+                    output_gradient = output_state.input_gradient
+                    if block.layer.trainable():
+                        for optimizer, parameter, gradient in zip(
+                            block.optimizers,
+                            block.layer.parameters(),
+                            output_state.parameter_gradients
+                        ):
+                            optimizer.record(Update(parameter, gradient))
+                            if optimizer.should_optimize():
+                                optimizer.optimize()
 
-    # training loop
-    for i in range(iterations):
-        state.current_iteration = i
-        cost = 0
+            cost /= len(x_train)
+            state.cost = cost
 
-        # go through all training samples
-        for x, y in zip(x_train, y_train):
-            # forward propagation
-            output = x
-            for index, (layer, _, _) in enumerate(network):
-                state.current_layer = index
-                output = layer.forward(output)
-            
-            # error for display purpose
-            cost += loss.call(y, output)
+            if verbose:
+                print(f'#{i + 1}/{iterations}\t cost={cost:2f}')
 
-            # backward propagation
-            output_gradient = loss.prime(y, output)
-            for index, (layer, _, optimizers) in enumerate(reversed(network)):
-                state.current_iteration = index
-                output_state = layer.backward(output_gradient)
-                output_gradient = output_state.input_gradient
-                if layer.trainable():
-                    for optimizer, parameter, gradient in zip(
-                        optimizers,
-                        layer.parameters(),
-                        output_state.parameter_gradients
-                    ):
-                        optimizer.record(Update(parameter, gradient))
-                        if optimizer.should_optimize():
-                            optimizer.optimize()
+    def predict(self, x: Array) -> Array:
+        for block in self.network:
+            x = block.layer.forward(x)
+        return x
 
-        cost /= len(x_train)
-        state.cost = cost
+    def predict_all(self, x_list: list[Array]) -> list[Array]:
+        return [self.predict(x) for x in x_list]
 
-        if verbose:
-            print(f'#{i + 1}/{iterations}\t cost={cost:2f}')
+    def _initialize(self) -> State:
+        state = State(layers=[block.layer for block in self.network])
+        
+        # provide state to layers
+        for block in self.network:
+            block.layer.on_state(state)
+
+        # provide state to initializers
+        for block in self.network:
+            if block.layer.trainable():
+                block.initializer.on_state(state)
+
+        # provide state to optimizers
+        for block in self.network:
+            if block.layer.trainable():
+                for optimizer in block.optimizers:
+                    optimizer.on_state(state)
+
+        # initialize layers parameters
+        for block in self.network:
+            if block.layer.trainable():
+                block.layer.initialize(block.initializer)
+
+        # provide initialized target shapes to optimizers
+        for block in self.network:
+            if block.layer.trainable():
+                for optimizer, parameter in zip(block.optimizers, block.layer.parameters()):
+                    optimizer.on_target_shape(parameter.shape)
+
+        return state
+
+    @staticmethod
+    def create(builders: list[BlockBuilder]) -> 'Network':
+        return Network([builder.build() for builder in builders])

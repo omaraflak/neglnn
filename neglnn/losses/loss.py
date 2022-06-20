@@ -1,7 +1,7 @@
-from neglnn.network.state import Stateful
+from abc import ABC
 from neglnn.utils.types import Float, Array
 
-class Loss(Stateful):
+class Loss(ABC):
     def call(self, true: Array, pred: Array) -> Float:
         raise NotImplementedError
     
