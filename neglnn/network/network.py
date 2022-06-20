@@ -46,7 +46,7 @@ class Network:
 
         # training loop
         for i in range(epochs):
-            state.current_iteration = i
+            state.current_epoch = i
             cost = 0
 
             # go through all training samples
@@ -63,7 +63,7 @@ class Network:
                 # backward propagation
                 output_gradient = loss.prime(y, output)
                 for index, block in enumerate(reversed(self.network)):
-                    state.current_epoch = index
+                    state.current_layer = index
                     output_state = block.layer.backward(output_gradient)
                     output_gradient = output_state.input_gradient
                     if block.layer.trainable():
