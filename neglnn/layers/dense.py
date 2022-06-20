@@ -9,7 +9,6 @@ class Dense(Layer):
         super().__init__()
         self.input_size = input_size
         self.output_size = output_size
-        self.input: Optional[Array] = None
         self.weights: Optional[Array] = None
         self.bias: Optional[Array] = None
     
