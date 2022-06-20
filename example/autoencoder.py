@@ -42,8 +42,8 @@ decoder = network[5:]
 
 _, ax = plt.subplots(5, 3)
 for i in range(5):
-    code = encoder.predict(x_test[i])
-    reconstructed = decoder.predict(code)
+    code = encoder.run(x_test[i])
+    reconstructed = decoder.run(code)
     ax[i][0].imshow(x_test[i], cmap='gray')
     ax[i][1].imshow(np.reshape(code, (4, 4)), cmap='gray')
     ax[i][2].imshow(reconstructed, cmap='gray')

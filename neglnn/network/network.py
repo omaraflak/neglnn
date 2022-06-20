@@ -82,13 +82,13 @@ class Network:
             if verbose:
                 print(f'#{i + 1}/{epochs}\t cost={cost:2f}')
 
-    def predict(self, x: Array) -> Array:
+    def run(self, x: Array) -> Array:
         for block in self.network:
             x = block.layer.forward(x)
         return x
 
-    def predict_all(self, x_list: list[Array]) -> list[Array]:
-        return [self.predict(x) for x in x_list]
+    def run_all(self, x_list: list[Array]) -> list[Array]:
+        return [self.run(x) for x in x_list]
 
     def _initialize(self) -> State:
         state = State(layers=[block.layer for block in self.network])

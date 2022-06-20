@@ -18,4 +18,4 @@ network = Network.create([
 
 network.fit(X, Y, MSE(), 1000)
 
-print(network.predict_all(X))
+print(network.run_all(X))
