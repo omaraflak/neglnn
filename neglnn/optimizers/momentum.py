@@ -1,7 +1,6 @@
 import numpy as np
-from typing import Optional
 from neglnn.optimizers.optimizer import Optimizer, Update
-from neglnn.utils.types import Float, Array, Shape
+from neglnn.utils.types import Float, Shape
 
 class Momentum(Optimizer):
     def __init__(self, learning_rate: Float = 0.01, mu: Float = 0.95):

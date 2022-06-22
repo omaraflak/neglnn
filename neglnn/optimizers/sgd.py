@@ -1,4 +1,3 @@
-from typing import Optional
 from neglnn.optimizers.optimizer import Optimizer, Update
 from neglnn.utils.types import Float
 
