@@ -25,8 +25,5 @@ class State:
         return len(self.layers)
 
 class Stateful:
-    def __init__(self):
-        self.state: Optional[State] = None
-    
     def on_state(self, state: State):
         self.state = state

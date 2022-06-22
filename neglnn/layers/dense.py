@@ -12,7 +12,7 @@ class Dense(Layer):
         self.weights: Optional[Array] = None
         self.bias: Optional[Array] = None
     
-    def initialize(self, initializer: Initializer):
+    def on_initializer(self, initializer: Initializer):
         self.weights = initializer.get(self.input_size, self.output_size)
         self.bias = initializer.get(1, self.output_size)
 

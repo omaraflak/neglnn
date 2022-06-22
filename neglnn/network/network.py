@@ -1,32 +1,17 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional, Callable
 from neglnn.initializers.initializer import Initializer
 from neglnn.layers.layer import Layer
 from neglnn.losses.loss import Loss
 from neglnn.network.state import State
-from neglnn.optimizers.optimizer import Optimizer, Update
+from neglnn.optimizers.optimizer import Optimizer
 from neglnn.utils.types import Array
 
 @dataclass
 class Block:
     layer: Layer
     initializer: Optional[Initializer] = None
-    optimizers: list[Optimizer] = field(default_factory=list)
-
-@dataclass
-class BlockBuilder:
-    layer: Layer
-    initializer: Optional[Initializer] = None
-    optimizer_provider: Optional[Callable[[], Optimizer]] = None
-
-    def optimizers(self, n: int) -> list[Optimizer]:
-        return [self.optimizer_provider() for _ in range(n)]
-
-    def build(self):
-        optimizers: list[Optimizer] = []
-        if self.layer.trainable():
-            optimizers = self.optimizers(self.layer.parameters_count())
-        return Block(self.layer, self.initializer, optimizers)
+    provider: Optional[Callable[[], Optimizer]] = None
 
 class Network:
     def __init__(self, network: list[Block]):
@@ -67,14 +52,7 @@ class Network:
                     output_state = block.layer.backward(output_gradient)
                     output_gradient = output_state.input_gradient
                     if block.layer.trainable():
-                        for optimizer, parameter, gradient in zip(
-                            block.optimizers,
-                            block.layer.parameters(),
-                            output_state.parameter_gradients
-                        ):
-                            optimizer.record(Update(parameter, gradient))
-                            if optimizer.should_optimize():
-                                optimizer.optimize()
+                        block.layer.optimize(output_state.parameter_gradients)
 
             cost /= len(x_train)
             state.cost = cost
@@ -102,28 +80,17 @@ class Network:
             if block.layer.trainable():
                 block.initializer.on_state(state)
 
-        # provide state to optimizers
-        for block in self.network:
-            if block.layer.trainable():
-                for optimizer in block.optimizers:
-                    optimizer.on_state(state)
-
         # initialize layers parameters
         for block in self.network:
             if block.layer.trainable():
-                block.layer.initialize(block.initializer)
+                block.layer.on_initializer(block.initializer)
 
-        # provide initialized target shapes to optimizers
+        # initialize layers optimizers
         for block in self.network:
             if block.layer.trainable():
-                for optimizer, parameter in zip(block.optimizers, block.layer.parameters()):
-                    optimizer.on_target_shape(parameter.shape)
+                block.layer.on_optimizer(block.provider)
 
         return state
     
     def __getitem__(self, subscript) -> 'Network':
         return Network(self.network[subscript])
-
-    @staticmethod
-    def create(builders: list[BlockBuilder]) -> 'Network':
-        return Network([builder.build() for builder in builders])

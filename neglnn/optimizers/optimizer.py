@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 from neglnn.network.state import Stateful
 from neglnn.utils.types import Array, Shape
 
@@ -9,9 +8,6 @@ class Update:
     gradient: Array
 
 class Optimizer(Stateful):
-    def __init__(self):
-        self.target_shape: Optional[Shape] = None
-
     def record(self, update: Update):
         raise NotImplementedError
 

@@ -8,7 +8,7 @@ from neglnn.activations.tanh import Tanh
 from neglnn.losses.mse import MSE
 from neglnn.initializers.xavier import Xavier
 from neglnn.optimizers.momentum import Momentum
-from neglnn.network.network import Network, BlockBuilder
+from neglnn.network.network import Network, Block
 
 def load_data(limit: int):
     (x_train, _), (x_test, _) = mnist.load_data()
@@ -21,16 +21,16 @@ def load_data(limit: int):
 
     return x_train[:limit], x_test
 
-network = Network.create([
-    BlockBuilder(Reshape((28, 28), (1, 784))),
-    BlockBuilder(Dense(784, 30), Xavier(), lambda: Momentum(0.1)),
-    BlockBuilder(Tanh()),
-    BlockBuilder(Dense(30, 16), Xavier(), lambda: Momentum(0.1)),
-    BlockBuilder(Tanh()),
-    BlockBuilder(Dense(16, 30), Xavier(), lambda: Momentum(0.1)),
-    BlockBuilder(Tanh()),
-    BlockBuilder(Dense(30, 784), Xavier(), lambda: Momentum(0.1)),
-    BlockBuilder(Reshape((1, 784), (28, 28)))
+network = Network([
+    Block(Reshape((28, 28), (1, 784))),
+    Block(Dense(784, 30), Xavier(), lambda: Momentum(0.1)),
+    Block(Tanh()),
+    Block(Dense(30, 16), Xavier(), lambda: Momentum(0.1)),
+    Block(Tanh()),
+    Block(Dense(16, 30), Xavier(), lambda: Momentum(0.1)),
+    Block(Tanh()),
+    Block(Dense(30, 784), Xavier(), lambda: Momentum(0.1)),
+    Block(Reshape((1, 784), (28, 28)))
 ])
 
 x_train, x_test = load_data(1000)
