@@ -6,7 +6,6 @@ class SGD(Optimizer):
     def __init__(self, learning_rate: Float = 0.01):
         super().__init__()
         self.learning_rate = learning_rate
-        self.update: Optional[Update] = None
 
     def record(self, update: Update):
         self.update = update
