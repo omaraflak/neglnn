@@ -13,24 +13,24 @@ class Dense(Layer):
         self.bias: Optional[Array] = None
     
     def on_initializer(self, initializer: Initializer):
-        self.weights = initializer.get(self.input_size, self.output_size)
-        self.bias = initializer.get(1, self.output_size)
+        self.weights = initializer.get(self.output_size, self.input_size)
+        self.bias = initializer.get(self.output_size, 1)
 
     def forward(self, input: Array) -> Array:
         self.input = input
-        return np.dot(input, self.weights) + self.bias
+        return np.dot(self.weights, input) + self.bias
     
     def backward(self, output_gradient: Array) -> BackwardState:
         return BackwardState(
-            np.dot(output_gradient, self.weights.T),
-            (np.dot(self.input.T, output_gradient), output_gradient)
+            np.dot(self.weights.T, output_gradient),
+            (np.dot(output_gradient, self.input.T), output_gradient)
         )
     
     def input_shape(self) -> Shape:
-        return (1, self.input_size)
+        return (self.input_size, 1)
     
     def output_shape(self) -> Shape:
-        return (1, self.output_size)
+        return (self.output_size, 1)
 
     def trainable(self) -> bool:
         return True

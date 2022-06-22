@@ -6,7 +6,7 @@ from neglnn.initializers.uniform import Uniform
 from neglnn.optimizers.momentum import Momentum
 from neglnn.network.network import Network, Block
 
-x_train = np.reshape([[0, 0], [0, 1], [1, 0], [1, 1]], (4, 1, 2))
+x_train = np.reshape([[0, 0], [0, 1], [1, 0], [1, 1]], (4, 2, 1))
 y_train = np.reshape([[0], [1], [1], [0]], (4, 1, 1))
 
 network = Network([
