@@ -32,8 +32,8 @@ class Dense(Layer):
     def output_shape(self) -> Shape:
         return (1, self.output_size)
 
-    def parameters(self) -> tuple[Array, ...]:
-        return (self.weights, self.bias)
-
     def trainable(self) -> bool:
         return True
+
+    def parameters(self) -> tuple[Array, ...]:
+        return (self.weights, self.bias)

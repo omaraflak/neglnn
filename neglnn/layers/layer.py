@@ -25,10 +25,10 @@ class Layer(Stateful, Identifiable):
     def output_shape(self) -> Shape:
         raise NotImplementedError
 
-    def parameters(self) -> tuple[Array, ...]:
-        raise NotImplementedError
-
     def trainable(self) -> bool:
+        return False
+
+    def parameters(self) -> tuple[Array, ...]:
         raise NotImplementedError
     
     def parameters_count(self) -> int:

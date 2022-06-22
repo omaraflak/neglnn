@@ -14,6 +14,3 @@ class Activation(Layer):
     
     def backward(self, output_gradient: Array) -> BackwardState:
         return BackwardState(output_gradient * self.prime(self.input), None)
-    
-    def trainable(self) -> bool:
-        return False

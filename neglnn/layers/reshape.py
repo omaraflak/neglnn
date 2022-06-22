@@ -19,6 +19,3 @@ class Reshape(Layer):
     
     def output_shape(self) -> Shape:
         return self._output_shape
-
-    def trainable(self) -> bool:
-        return False
