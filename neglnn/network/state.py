@@ -14,11 +14,11 @@ class State:
 
     @property
     def current_layer_input_shape(self) -> Shape:
-        return self.layers[self.current_layer].input_shape()
+        return self.layers[self.current_layer].input_shape
 
     @property
     def current_layer_output_shape(self) -> Shape:
-        return self.layers[self.current_layer].output_shape()
+        return self.layers[self.current_layer].output_shape
     
     @property
     def layers_count(self) -> int:

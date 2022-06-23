@@ -1,20 +1,17 @@
 import numpy as np
-from typing import Optional
 from neglnn.layers.layer import Layer, BackwardState
 from neglnn.initializers.initializer import Initializer
-from neglnn.utils.types import Array, Shape
+from neglnn.utils.types import Array
 
 class Dense(Layer):
-    def __init__(self, input_size: int, output_size: int):
-        super().__init__()
-        self.input_size = input_size
-        self.output_size = output_size
-        self.weights: Optional[Array] = None
-        self.bias: Optional[Array] = None
+    def __init__(self, input_units: int, output_units: int):
+        super().__init__((input_units, 1), (output_units, 1), True)
+        self.input_units = input_units
+        self.output_units = output_units
     
     def on_initializer(self, initializer: Initializer):
-        self.weights = initializer.get(self.output_size, self.input_size)
-        self.bias = initializer.get(self.output_size, 1)
+        self.weights = initializer.get(self.output_units, self.input_units)
+        self.bias = initializer.get(self.output_units, 1)
 
     def forward(self, input: Array) -> Array:
         self.input = input
@@ -25,15 +22,6 @@ class Dense(Layer):
             np.dot(self.weights.T, output_gradient),
             (np.dot(output_gradient, self.input.T), output_gradient)
         )
-    
-    def input_shape(self) -> Shape:
-        return (self.input_size, 1)
-    
-    def output_shape(self) -> Shape:
-        return (self.output_size, 1)
-
-    def trainable(self) -> bool:
-        return True
 
     def parameters(self) -> tuple[Array, ...]:
         return (self.weights, self.bias)

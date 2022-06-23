@@ -51,7 +51,7 @@ class Network:
                     state.current_layer = index
                     output_state = block.layer.backward(output_gradient)
                     output_gradient = output_state.input_gradient
-                    if block.layer.trainable():
+                    if block.layer.trainable:
                         block.layer.optimize(output_state.parameter_gradients)
 
             cost /= len(x_train)
@@ -77,17 +77,17 @@ class Network:
 
         # provide state to initializers
         for block in self.network:
-            if block.layer.trainable():
+            if block.layer.trainable:
                 block.initializer.on_state(state)
 
         # initialize layers parameters
         for block in self.network:
-            if block.layer.trainable():
+            if block.layer.trainable:
                 block.layer.on_initializer(block.initializer)
 
         # initialize layers optimizers
         for block in self.network:
-            if block.layer.trainable():
+            if block.layer.trainable:
                 block.layer.on_optimizer(block.provider)
 
         return state
