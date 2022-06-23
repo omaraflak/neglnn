@@ -1,4 +1,5 @@
 from neglnn.layers.layer import Layer, BackwardState
+from neglnn.network.state import State
 from neglnn.utils.types import Array
 
 class Activation(Layer):
@@ -13,4 +14,4 @@ class Activation(Layer):
         return self.call(input)
     
     def backward(self, output_gradient: Array) -> BackwardState:
-        return BackwardState(output_gradient * self.prime(self.input), None)
+        return BackwardState(output_gradient * self.prime(self.input))
