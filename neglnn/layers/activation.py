@@ -1,5 +1,4 @@
 from neglnn.layers.layer import Layer, BackwardState
-from neglnn.network.state import State
 from neglnn.utils.types import Array
 
 class Activation(Layer):
