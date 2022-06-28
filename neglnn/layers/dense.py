@@ -5,7 +5,7 @@ from neglnn.utils.types import Array
 
 class Dense(Layer):
     def __init__(self, input_units: int, output_units: int):
-        super().__init__((input_units, 1), (output_units, 1), True)
+        super().__init__((input_units, 1), (output_units, 1), trainable=True)
         self.input_units = input_units
         self.output_units = output_units
     
