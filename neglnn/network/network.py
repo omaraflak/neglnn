@@ -23,7 +23,8 @@ class Network:
         y_train: list[Array],
         loss: Loss,
         epochs: int,
-        verbose: bool = True
+        verbose: bool = True,
+        callback: Optional[Callable[[State], None]] = None 
     ):
         state = self._initialize()
         state.epochs = epochs
@@ -59,6 +60,9 @@ class Network:
 
             if verbose:
                 print(f'#{i + 1}/{epochs}\t cost={cost:2f}')
+            
+            if callback:
+                callback(state)
 
     def run(self, x: Array) -> Array:
         for block in self.network:
