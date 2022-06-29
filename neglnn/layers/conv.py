@@ -19,13 +19,10 @@ class Conv(Layer):
         return np.array([unit.forward(input) for unit in self.conv_units])
     
     def backward(self, output_gradient: Array) -> BackwardState:
-        backward_states = [
-            unit.backward(grad)
-            for unit, grad in zip(self.conv_units, output_gradient)
-        ]
+        back = [unit.backward(grad) for unit, grad in zip(self.conv_units, output_gradient)]
         return BackwardState(
-            np.sum([s.input_gradient for s in backward_states], axis=0),
-            tuple(grad for s in backward_states for grad in s.parameter_gradients)
+            np.sum([b.input_gradient for b in back], axis=0),
+            tuple(grad for b in back for grad in b.parameter_gradients)
         )
 
     def parameters(self) -> tuple[Array, ...]:
