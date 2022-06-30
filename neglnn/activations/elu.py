@@ -2,7 +2,7 @@ import numpy as np
 from neglnn.layers.activation import Activation
 from neglnn.utils.types import Array, Float
 
-class LeakyRelu(Activation):
+class Elu(Activation):
     def __init__(self, alpha: Float = 1.0):
         self.alpha = alpha
 
