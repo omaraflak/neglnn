@@ -4,6 +4,7 @@ from neglnn.utils.types import Array, Float
 
 class Linear(Activation):
     def __init__(self, c: Float = 1.0):
+        super().__init__()
         self.c = c
 
     def call(self, x: Array) -> Array:

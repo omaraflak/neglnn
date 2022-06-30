@@ -4,6 +4,7 @@ from neglnn.utils.types import Array, Float
 
 class Elu(Activation):
     def __init__(self, alpha: Float = 1.0):
+        super().__init__()
         self.alpha = alpha
 
     def call(self, x: Array) -> Array:
