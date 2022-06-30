@@ -8,7 +8,7 @@ class Dense(Layer):
         super().__init__((input_units, 1), (output_units, 1), trainable=True)
         self.input_units = input_units
         self.output_units = output_units
-    
+
     def on_initializer(self, initializer: Initializer):
         self.weights = initializer.get(self.output_units, self.input_units)
         self.bias = initializer.get(self.output_units, 1)
@@ -16,7 +16,7 @@ class Dense(Layer):
     def forward(self, input: Array) -> Array:
         self.input = input
         return np.dot(self.weights, input) + self.bias
-    
+
     def backward(self, output_gradient: Array) -> BackwardState:
         return BackwardState(
             np.dot(self.weights.T, output_gradient),

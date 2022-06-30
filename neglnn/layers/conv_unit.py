@@ -14,7 +14,7 @@ class ConvUnit(Layer):
         super().__init__(input_shape, output_shape, trainable=True)
         self.kernels_shape = (input_depth, kernel_size, kernel_size)
         self.bias_shape = output_shape
-    
+
     def on_initializer(self, initializer: Initializer):
         self.kernels = initializer.get(*self.kernels_shape)
         self.bias = initializer.get(*self.bias_shape)
@@ -25,7 +25,7 @@ class ConvUnit(Layer):
             signal.correlate2d(image, kernel, 'valid')
             for image, kernel in zip(input, self.kernels)
         ], axis=0)
-    
+
     def backward(self, output_gradient: Array) -> BackwardState:
         input_gradient = np.array([
             signal.convolve2d(output_gradient, kernel, 'full')

@@ -8,6 +8,6 @@ class Reshape(Layer):
 
     def forward(self, input: Array) -> Array:
         return np.reshape(input, self.output_shape)
-    
+
     def backward(self, output_gradient: Array) -> BackwardState:
         return BackwardState(np.reshape(output_gradient, self.input_shape))

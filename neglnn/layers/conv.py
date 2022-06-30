@@ -9,7 +9,7 @@ class Conv(Layer):
         self.conv_units = [ConvUnit(input_shape, kernel_size) for _ in range(depth)]
         height, width = self.conv_units[0].output_shape
         super().__init__(input_shape, (depth, height, width), trainable=True)
-    
+
     def on_initializer(self, initializer: Initializer):
         for unit in self.conv_units:
             unit.on_initializer(initializer)
@@ -17,7 +17,7 @@ class Conv(Layer):
 
     def forward(self, input: Array) -> Array:
         return np.array([unit.forward(input) for unit in self.conv_units])
-    
+
     def backward(self, output_gradient: Array) -> BackwardState:
         back = [unit.backward(grad) for unit, grad in zip(self.conv_units, output_gradient)]
         return BackwardState(
