@@ -9,7 +9,7 @@ from neglnn.layers.conv import Conv
 from neglnn.activations.tanh import Tanh
 from neglnn.activations.softmax import Softmax
 from neglnn.losses.mse import MSE
-from neglnn.initializers.xavier import Xavier
+from neglnn.initializers.xavier_normal import XavierNormal
 from neglnn.optimizers.sgd import SGD
 from neglnn.network.network import Network, Block
 
@@ -30,14 +30,14 @@ def load_data(limit: int):
 
 network = Network([
     Block(Reshape((28, 28), (1, 28, 28))),
-    Block(Conv((1, 28, 28), 5, 3), Xavier(), lambda: SGD(0.1)),
+    Block(Conv((1, 28, 28), 5, 3), XavierNormal(), lambda: SGD(0.1)),
     Block(Tanh()),
-    Block(Conv((3, 24, 24), 5, 3), Xavier(), lambda: SGD(0.1)),
+    Block(Conv((3, 24, 24), 5, 3), XavierNormal(), lambda: SGD(0.1)),
     Block(Tanh()),
     Block(Flatten((3, 20, 20))),
-    Block(Dense(1200, 20), Xavier(), lambda: SGD(0.1)),
+    Block(Dense(1200, 20), XavierNormal(), lambda: SGD(0.1)),
     Block(Tanh()),
-    Block(Dense(20, 10), Xavier(), lambda: SGD(0.1)),
+    Block(Dense(20, 10), XavierNormal(), lambda: SGD(0.1)),
     Block(Softmax())
 ])
 

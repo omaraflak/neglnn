@@ -6,7 +6,7 @@ from neglnn.layers.reshape import Reshape
 from neglnn.activations.tanh import Tanh
 from neglnn.activations.softmax import Softmax
 from neglnn.losses.mse import MSE
-from neglnn.initializers.xavier import Xavier
+from neglnn.initializers.xavier_normal import XavierNormal
 from neglnn.optimizers.momentum import Momentum
 from neglnn.network.network import Network, Block
 
@@ -25,11 +25,11 @@ def load_data(limit: int):
 
 network = Network([
     Block(Reshape((28, 28), (784, 1))),
-    Block(Dense(784, 50), Xavier(), lambda: Momentum(0.1)),
+    Block(Dense(784, 50), XavierNormal(), lambda: Momentum(0.1)),
     Block(Tanh()),
-    Block(Dense(50, 20), Xavier(), lambda: Momentum(0.1)),
+    Block(Dense(50, 20), XavierNormal(), lambda: Momentum(0.1)),
     Block(Tanh()),
-    Block(Dense(20, 10), Xavier(), lambda: Momentum(0.1)),
+    Block(Dense(20, 10), XavierNormal(), lambda: Momentum(0.1)),
     Block(Softmax())
 ])
 
