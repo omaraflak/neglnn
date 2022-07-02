@@ -2,7 +2,7 @@ import numpy as np
 from neglnn.losses.loss import Loss
 from neglnn.utils.types import Array, Float
 
-class CrossEntropy(Loss):
+class CategoricalCrossEntropy(Loss):
     def call(self, true: Array, pred: Array) -> Float:
         return -np.sum(true * np.log(pred))
 
