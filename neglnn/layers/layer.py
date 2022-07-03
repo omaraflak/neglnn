@@ -11,6 +11,12 @@ class BackwardState:
     input_gradient: Array
     parameter_gradients: tuple[Array, ...] = field(default_factory=tuple)
 
+"""
+Base Laye class. Initialization order is the following:
+- `on_state`
+- `on_initializer`
+- `on_optimizer`
+"""
 class Layer(Stateful, Identifiable):
     def __init__(
         self,
@@ -24,6 +30,9 @@ class Layer(Stateful, Identifiable):
         self.trainable = trainable
 
     def on_initializer(self, initializer: Initializer):
+        """
+        Initialize the trainable parameters here using the `initializer`
+        """
         raise NotImplementedError
 
     def on_optimizer(self, provider: Callable[[], Optimizer]):
@@ -38,9 +47,17 @@ class Layer(Stateful, Identifiable):
         raise NotImplementedError
 
     def backward(self, output_gradient: Array) -> BackwardState:
+        """
+        Return the input gradient as well as the parameters gradients.
+        Parameters gradients must be returned in the same order as the
+        parameters are returned in `parameters()`
+        """
         raise NotImplementedError
 
     def parameters(self) -> tuple[Array, ...]:
+        """
+        Return a tuple of all the trainable parameters
+        """
         raise NotImplementedError
 
     def optimize(self, gradients: tuple[Array, ...]):
