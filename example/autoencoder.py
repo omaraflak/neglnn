@@ -12,13 +12,8 @@ from neglnn.network.network import Network, Block
 
 def load_data(limit: int):
     (x_train, _), (x_test, _) = mnist.load_data()
-
-    x_train = x_train.astype('float32')
-    x_train /= 255
-
-    x_test = x_test.astype('float32')
-    x_test /= 255
-
+    x_train = x_train.astype('float32') / 255
+    x_test = x_test.astype('float32') / 255
     return x_train[:limit], x_test
 
 network = Network([

@@ -1,4 +1,3 @@
-from typing import Optional
 from dataclasses import dataclass, field
 from neglnn.utils.types import Float, Shape
 import neglnn.layers.layer
