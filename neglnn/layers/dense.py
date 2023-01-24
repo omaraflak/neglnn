@@ -11,11 +11,11 @@ class Dense(Layer):
 
     def on_initializer(self, initializer: Initializer):
         self.weights = initializer.get(self.output_units, self.input_units)
-        self.bias = initializer.get(self.output_units, 1)
+        self.biases = initializer.get(self.output_units, 1)
 
     def forward(self, input: Array) -> Array:
         self.input = input
-        return np.dot(self.weights, input) + self.bias
+        return np.dot(self.weights, input) + self.biases
 
     def backward(self, output_gradient: Array) -> BackwardState:
         return BackwardState(
@@ -24,4 +24,4 @@ class Dense(Layer):
         )
 
     def parameters(self) -> tuple[Array, ...]:
-        return (self.weights, self.bias)
+        return (self.weights, self.biases)
