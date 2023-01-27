@@ -15,4 +15,4 @@ class Dropout(Layer):
         return self.kept * input
 
     def backward(self, output_gradient: Array) -> BackwardState:
-        return BackwardState(self.kept)
+        return BackwardState(self.kept * output_gradient)
