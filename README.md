@@ -13,7 +13,7 @@ from neglnn.initializers.normal import Normal
 from neglnn.optimizers.momentum import Momentum
 from neglnn.network.network import Network, BlockBuilder
 
-X = np.reshape([[0, 0], [0, 1], [1, 0], [1, 1]], (4, 1, 2))
+X = np.reshape([[0, 0], [0, 1], [1, 0], [1, 1]], (4, 2, 1))
 Y = np.reshape([[0], [1], [1], [0]], (4, 1, 1))
 
 network = Network.create([

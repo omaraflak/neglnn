@@ -7,4 +7,4 @@ class XavierUniform(Initializer):
         input_neurons = np.prod(self.state.current_layer_input_shape)
         output_neurons = np.prod(self.state.current_layer_output_shape)
         limit = np.sqrt(6 / (input_neurons + output_neurons))
-        return np.random.uniform(-limit, limit)
+        return np.random.uniform(-limit, limit, shape)

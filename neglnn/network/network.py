@@ -82,6 +82,7 @@ class Network:
         # provide state to initializers
         for block in self.network:
             if block.layer.trainable:
+                state.current_layer = block.layer
                 block.initializer.on_state(state)
 
         # initialize layers parameters
